@@ -20,7 +20,11 @@ export default function Header() {
   return (
     <>
       <main></main>
-      <Stack direction="row" spacing={6} alignItems="center">
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        spacing={{ xs: 1, sm: 2, md: 4 }}
+        alignItems="center"
+      >
         <Image src={logo} height={60} />
         <Item elevation={0}>Dashboard</Item>
         <Item elevation={0}>About</Item>
