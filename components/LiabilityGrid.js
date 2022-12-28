@@ -52,11 +52,17 @@ export default function LiabilityGrid() {
       <DataGrid
         rows={rows}
         columns={columns}
-        pageSize={5}
+        pageSize={100}
+        autoHeight={true}
         rowsPerPageOptions={[5]}
-        checkboxSelection
         disableSelectionOnClick
-        experimentalFeatures={{ newEditingApi: true }}
+        isRowSelectable={false}
+        disableColumnSelector
+        sx={{
+          border: 0,
+          color: "white",
+          fontFamily: "Quicksand",
+        }}
       />
     </Box>
   );

@@ -9,14 +9,13 @@ p {
 .parent {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
   grid-column-gap: 0px;
   grid-row-gap: 0px;
 }
 
-.assetTitle { grid-area: 1 / 1 / 2 / 2; height:fit-content; }
+.assetTitle { grid-area: 1 / 1 / 2 / 2; height:fit-content; margin-bottom: 50px; }
 .assetGrid { grid-area: 2 / 1 / 3 / 2; height:fit-content;}
-.liabilityTitle { grid-area: 1 / 2 / 2 / 3; height:fit-content; }
+.liabilityTitle { grid-area: 1 / 2 / 2 / 3; height:fit-content; margin-bottom: 50px; }
 .liabilityGrid { grid-area: 2 / 2 / 3 / 3; height:fit-content;}
 
 :root {

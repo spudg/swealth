@@ -3,6 +3,17 @@ import Header from "../components/Header";
 import AssetGrid from "../components/AssetGrid";
 import LiabilityGrid from "../components/LiabilityGrid";
 
+const {
+  initializeApp,
+  applicationDefault,
+  cert,
+} = require("firebase-admin/app");
+const {
+  getFirestore,
+  Timestamp,
+  FieldValue,
+} = require("firebase-admin/firestore");
+
 export default function Home() {
   return (
     <>
