@@ -3,18 +3,82 @@ import Header from "../components/Header";
 import AssetGrid from "../components/AssetGrid";
 import LiabilityGrid from "../components/LiabilityGrid";
 
-const {
-  initializeApp,
-  applicationDefault,
-  cert,
-} = require("firebase-admin/app");
-const {
-  getFirestore,
-  Timestamp,
-  FieldValue,
-} = require("firebase-admin/firestore");
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
+import { getDocs } from "firebase/firestore";
+import { Button } from "@mui/material";
+import React, { useEffect } from "react";
+
+const firebaseConfig = {
+  //shhh
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Initialize Cloud Firestore and get a reference to the service
+const db = getFirestore(app);
+
+async function testA() {
+  try {
+    const docRef = await addDoc(collection(db, "assets"), {
+      date_added: "1672581257797",
+      name: "testAssets",
+      owner_id: "C8rZzRZsNIAhneQAY9jI",
+      value: "150928.33",
+    });
+    console.log("Document written with ID: ", docRef.id);
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+}
+
+async function testL() {
+  try {
+    const docRef = await addDoc(collection(db, "liabilities"), {
+      date_added: "1672581257797",
+      name: "testLiability",
+      owner_id: "C8rZzRZsNIAhneQAY9jI",
+      value: "67928.33",
+    });
+    console.log("Document written with ID: ", docRef.id);
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+}
 
 export default function Home() {
+  const [assets, setAssets] = React.useState(false);
+  const [liabilities, setLiabilities] = React.useState(false);
+
+  async function getAssets() {
+    let assets = Array();
+    const querySnapshot = await getDocs(collection(db, "assets"));
+    querySnapshot.forEach((doc) => {
+      let asset = doc.data();
+      asset.id = doc.id;
+      assets.push(asset);
+    });
+    setAssets(assets);
+  }
+
+  async function getLiabilities() {
+    let liabilities = Array();
+    const querySnapshot = await getDocs(collection(db, "liabilities"));
+    querySnapshot.forEach((doc) => {
+      let liability = doc.data();
+      liability.id = doc.id;
+      liabilities.push(liability);
+    });
+    setLiabilities(liabilities);
+  }
+
+  useEffect(() => {
+    getAssets();
+    getLiabilities();
+  });
+
   return (
     <>
       <Head>
@@ -88,7 +152,8 @@ export default function Home() {
                   className="assetGrid"
                   style={{ marginLeft: "150px", marginRight: "150px" }}
                 >
-                  <AssetGrid />
+                  <Button onClick={testA}>Add</Button>
+                  <AssetGrid assets={assets} />
                 </div>
                 <div className="liabilityTitle">
                   <div
@@ -114,7 +179,8 @@ export default function Home() {
                   className="liabilityGrid"
                   style={{ marginLeft: "150px", marginRight: "150px" }}
                 >
-                  <LiabilityGrid />
+                  <Button onClick={testL}>Add</Button>
+                  <LiabilityGrid liabilities={liabilities} />
                 </div>
               </div>
             </div>
