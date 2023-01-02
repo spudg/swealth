@@ -52,7 +52,8 @@ export default function Home() {
   const [assets, setAssets] = React.useState(false);
   const [liabilities, setLiabilities] = React.useState(false);
 
-  async function getAssets() {
+  const getAssets = async () => {
+    console.log("run");
     let assets = Array();
     const querySnapshot = await getDocs(collection(db, "assets"));
     querySnapshot.forEach((doc) => {
@@ -61,9 +62,10 @@ export default function Home() {
       assets.push(asset);
     });
     setAssets(assets);
-  }
+  };
 
-  async function getLiabilities() {
+  const getLiabilities = async () => {
+    console.log("run");
     let liabilities = Array();
     const querySnapshot = await getDocs(collection(db, "liabilities"));
     querySnapshot.forEach((doc) => {
@@ -72,7 +74,7 @@ export default function Home() {
       liabilities.push(liability);
     });
     setLiabilities(liabilities);
-  }
+  };
 
   useEffect(() => {
     getAssets();
@@ -87,106 +89,100 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
-        <div style={{ marginTop: "20px", marginLeft: "20px" }}>
-          <Header />
+      <div style={{ marginTop: "20px", marginLeft: "20px" }}>
+        <Header />
+      </div>
+      <div>
+        <div
+          style={{
+            textAlign: "center",
+            fontSize: "6em",
+            marginTop: "100px",
+          }}
+        >
+          £1,298,333
         </div>
-        <body>
-          <header>
-            <div>
-              <div
-                style={{
-                  textAlign: "center",
-                  fontSize: "6em",
-                  marginTop: "100px",
-                }}
-              >
-                £1,298,333
-              </div>
-              <div
-                style={{
-                  textAlign: "center",
-                  color: "#84928b",
-                  fontSize: "1em",
-                  fontStyle: "italic",
-                }}
-              >
-                NET WORTH
-              </div>
-              <hr
-                color="#3e3e3e"
-                style={{
-                  marginLeft: "10%",
-                  marginRight: "10%",
-                  marginTop: "50px",
-                }}
-              />
-              <div
-                className="parent"
-                style={{
-                  textAlign: "center",
-                  marginTop: "75px",
-                }}
-              >
-                <div className="assetTitle">
-                  <div
-                    style={{
-                      textAlign: "center",
-                      fontSize: "4em",
-                    }}
-                  >
-                    £1,928,929
-                  </div>
-                  <div
-                    style={{
-                      textAlign: "center",
-                      color: "#84928b",
-                      fontSize: ".8em",
-                      fontStyle: "italic",
-                    }}
-                  >
-                    ASSETS
-                  </div>
-                </div>
-                <div
-                  className="assetGrid"
-                  style={{ marginLeft: "150px", marginRight: "150px" }}
-                >
-                  <Button onClick={testA}>Add</Button>
-                  <AssetGrid assets={assets} />
-                </div>
-                <div className="liabilityTitle">
-                  <div
-                    style={{
-                      textAlign: "center",
-                      fontSize: "4em",
-                    }}
-                  >
-                    £630,596
-                  </div>
-                  <div
-                    style={{
-                      textAlign: "center",
-                      color: "#84928b",
-                      fontSize: ".8em",
-                      fontStyle: "italic",
-                    }}
-                  >
-                    LIABILITIES
-                  </div>
-                </div>
-                <div
-                  className="liabilityGrid"
-                  style={{ marginLeft: "150px", marginRight: "150px" }}
-                >
-                  <Button onClick={testL}>Add</Button>
-                  <LiabilityGrid liabilities={liabilities} />
-                </div>
-              </div>
+        <div
+          style={{
+            textAlign: "center",
+            color: "#84928b",
+            fontSize: "1em",
+            fontStyle: "italic",
+          }}
+        >
+          NET WORTH
+        </div>
+        <hr
+          color="#3e3e3e"
+          style={{
+            marginLeft: "10%",
+            marginRight: "10%",
+            marginTop: "50px",
+          }}
+        />
+        <div
+          className="parent"
+          style={{
+            textAlign: "center",
+            marginTop: "75px",
+          }}
+        >
+          <div className="assetTitle">
+            <div
+              style={{
+                textAlign: "center",
+                fontSize: "4em",
+              }}
+            >
+              £1,928,929
             </div>
-          </header>
-        </body>
-      </main>
+            <div
+              style={{
+                textAlign: "center",
+                color: "#84928b",
+                fontSize: ".8em",
+                fontStyle: "italic",
+              }}
+            >
+              ASSETS
+            </div>
+          </div>
+          <div
+            className="assetGrid"
+            style={{ marginLeft: "150px", marginRight: "150px" }}
+          >
+            <Button onClick={testA}>Add</Button>
+            <AssetGrid assets={assets} />
+          </div>
+          <div className="liabilityTitle">
+            <div
+              style={{
+                textAlign: "center",
+                fontSize: "4em",
+              }}
+            >
+              £630,596
+            </div>
+            <div
+              style={{
+                textAlign: "center",
+                color: "#84928b",
+                fontSize: ".8em",
+                fontStyle: "italic",
+              }}
+            >
+              LIABILITIES
+            </div>
+          </div>
+          <div
+            className="liabilityGrid"
+            style={{ marginLeft: "150px", marginRight: "150px" }}
+          >
+            <Button onClick={testL}>Add</Button>
+            <LiabilityGrid liabilities={liabilities} />
+          </div>
+        </div>
+      </div>
     </>
   );
 }
