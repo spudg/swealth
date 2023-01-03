@@ -2,16 +2,25 @@ import Head from "next/head";
 import Header from "../components/Header";
 import AssetGrid from "../components/AssetGrid";
 import LiabilityGrid from "../components/LiabilityGrid";
+import AddAssetForm from "../components/AddAssetForm";
 
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { collection, addDoc } from "firebase/firestore";
 import { getDocs } from "firebase/firestore";
-import { Button } from "@mui/material";
+import {
+  AppBar,
+  Button,
+  Dialog,
+  Slide,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import { ThemeProvider } from "@mui/styles";
 import React, { useEffect } from "react";
 
 const firebaseConfig = {
-  //shhh
+  //Shhh
 };
 
 // Initialize Firebase
@@ -20,19 +29,9 @@ const app = initializeApp(firebaseConfig);
 // Initialize Cloud Firestore and get a reference to the service
 const db = getFirestore(app);
 
-async function testA() {
-  try {
-    const docRef = await addDoc(collection(db, "assets"), {
-      date_added: "1672581257797",
-      name: "testAssets",
-      owner_id: "C8rZzRZsNIAhneQAY9jI",
-      value: "150928.33",
-    });
-    console.log("Document written with ID: ", docRef.id);
-  } catch (e) {
-    console.error("Error adding document: ", e);
-  }
-}
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 async function testL() {
   try {
@@ -51,6 +50,10 @@ async function testL() {
 export default function Home() {
   const [assets, setAssets] = React.useState(false);
   const [liabilities, setLiabilities] = React.useState(false);
+
+  const handleAddAssetOpen = () => setOpenAddAsset(true);
+  const handleAddAssetClose = () => setOpenAddAsset(false);
+  const [openAddAsset, setOpenAddAsset] = React.useState(false);
 
   const getAssets = async () => {
     console.log("run");
@@ -151,7 +154,13 @@ export default function Home() {
             className="assetGrid"
             style={{ marginLeft: "150px", marginRight: "150px" }}
           >
-            <Button onClick={testA}>Add</Button>
+            <Button
+              onClick={handleAddAssetOpen}
+              style={{ float: "right", marginRight: 80 }}
+              size="large"
+            >
+              Add Asset
+            </Button>
             <AssetGrid assets={assets} />
           </div>
           <div className="liabilityTitle">
@@ -183,6 +192,40 @@ export default function Home() {
           </div>
         </div>
       </div>
+      <Dialog
+        open={openAddAsset}
+        onClose={handleAddAssetClose}
+        TransitionComponent={Transition}
+        PaperProps={{
+          style: { borderRadius: 15 },
+        }}
+      >
+        <ThemeProvider>
+          <AppBar
+            sx={{ position: "relative" }}
+            style={{ background: "#ff00ff" }}
+          >
+            <Toolbar variant="dense">
+              <Typography sx={{ ml: 3, flex: 1 }} variant="h6" component="div">
+                Add asset
+              </Typography>
+              <Button autoFocus color="inherit" onClick={handleAddAssetClose}>
+                Close
+              </Button>
+            </Toolbar>
+          </AppBar>
+        </ThemeProvider>
+        <div
+          style={{
+            margin: "20px",
+            marginLeft: "80px",
+            marginRight: "80px",
+          }}
+        >
+          <AddAssetForm />
+        </div>
+      </Dialog>
+      ;
     </>
   );
 }
