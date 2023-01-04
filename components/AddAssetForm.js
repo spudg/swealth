@@ -2,13 +2,25 @@ import React from "react";
 import { FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
 import { useForm, Form } from "./useForm";
 import Controls from "./controls/Controls";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
+
+const firebaseConfig = {
+  //Shhh
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Initialize Cloud Firestore and get a reference to the service
+const db = getFirestore(app);
 
 const initialFValues = {
-  asset_type: "",
-  description: "",
+  type: "",
+  name: "",
   value: "",
-  owner1_id: "",
-  owner2_id: "",
+  owner_id: "",
 };
 
 export default function AddAssetForm() {
@@ -17,10 +29,10 @@ export default function AddAssetForm() {
     temp.value = values.value
       ? ""
       : "Please enter the asset's estimated value.";
-    temp.description = values.description
+    temp.name = values.name
       ? ""
       : "Please enter a brief name or description of the asset.";
-    temp.asset_type = values.asset_type ? "" : "Required field.";
+    temp.type = values.type ? "" : "Required field.";
     setErrors({
       ...temp,
     });
@@ -33,19 +45,18 @@ export default function AddAssetForm() {
   const handleSubmit = async (e) => {
     if (!validate()) e.preventDefault();
     else {
-      e.preventDefault();
+      //e.preventDefault();
       addAsset(values);
-      window.location.reload(false);
     }
   };
 
-  async function addAsset() {
+  async function addAsset(values) {
     try {
       const docRef = await addDoc(collection(db, "assets"), {
-        date_added: "1672581257797",
-        name: "testAssets",
+        name: values.name,
         owner_id: "C8rZzRZsNIAhneQAY9jI",
-        value: "150928.33",
+        value: values.value,
+        type: values.type,
       });
       console.log("Document written with ID: ", docRef.id);
     } catch (e) {
@@ -59,11 +70,11 @@ export default function AddAssetForm() {
         <Grid container>
           <Grid container xs={12} alignItems="center" justifyContent="center">
             <Controls.Input
-              label="Description"
-              name="description"
-              value={values.description}
+              label="Name"
+              name="name"
+              value={values.name}
               onChange={handleInputChange}
-              error={errors.description}
+              error={errors.name}
             />
             <Controls.Input
               label="Value"
@@ -75,13 +86,19 @@ export default function AddAssetForm() {
             <FormControl>
               <InputLabel id="demo-simple-select-label">Type</InputLabel>
               <Select
-                name="asset_type"
+                name="type"
                 label="Type"
-                value={values.asset_type || ""}
+                value={values.type || ""}
                 onChange={handleInputChange}
               >
-                <MenuItem value={"retirement"}>Retirement</MenuItem>
-                <MenuItem value={"non-retirement"}>Non retirement</MenuItem>
+                <MenuItem value={"property"}>Property</MenuItem>
+                <MenuItem value={"listed-investments"}>
+                  Listed investments
+                </MenuItem>
+                <MenuItem value={"unlisted-investments"}>
+                  Unlisted investments
+                </MenuItem>
+                <MenuItem value={"other"}>Other</MenuItem>
               </Select>
             </FormControl>
           </Grid>
