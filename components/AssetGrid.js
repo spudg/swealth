@@ -5,11 +5,6 @@ import { DataGrid } from "@mui/x-data-grid";
 const columns = [
   { field: "id", headerName: "ID", width: 90 },
   {
-    field: "date_added",
-    headerName: "Date Added",
-    width: 150,
-  },
-  {
     field: "name",
     headerName: "Name",
     width: 150,

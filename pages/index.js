@@ -3,15 +3,17 @@ import Header from "../components/Header";
 import AssetGrid from "../components/AssetGrid";
 import LiabilityGrid from "../components/LiabilityGrid";
 import AddAssetForm from "../components/AddAssetForm";
+import AddLiabilityForm from "../components/AddLiabilityForm";
 
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { collection, addDoc } from "firebase/firestore";
+import { collection } from "firebase/firestore";
 import { getDocs } from "firebase/firestore";
 import {
   AppBar,
   Button,
   Dialog,
+  getToolbarUtilityClass,
   Slide,
   Toolbar,
   Typography,
@@ -33,30 +35,22 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-async function testL() {
-  try {
-    const docRef = await addDoc(collection(db, "liabilities"), {
-      date_added: "1672581257797",
-      name: "testLiability",
-      owner_id: "C8rZzRZsNIAhneQAY9jI",
-      value: "67928.33",
-    });
-    console.log("Document written with ID: ", docRef.id);
-  } catch (e) {
-    console.error("Error adding document: ", e);
-  }
-}
-
 export default function Home() {
+  const [loading, setLoading] = React.useState(true);
+
   const [assets, setAssets] = React.useState(false);
   const [liabilities, setLiabilities] = React.useState(false);
+  const [assetTotal, setAssetTotal] = React.useState(false);
+  const [liabilityTotal, setLiabilityTotal] = React.useState(false);
 
   const handleAddAssetOpen = () => setOpenAddAsset(true);
   const handleAddAssetClose = () => setOpenAddAsset(false);
   const [openAddAsset, setOpenAddAsset] = React.useState(false);
+  const handleAddLiabilityOpen = () => setOpenAddLiability(true);
+  const handleAddLiabilityClose = () => setOpenAddLiability(false);
+  const [openAddLiability, setOpenAddLiability] = React.useState(false);
 
   const getAssets = async () => {
-    console.log("run");
     let assets = Array();
     const querySnapshot = await getDocs(collection(db, "assets"));
     querySnapshot.forEach((doc) => {
@@ -64,11 +58,10 @@ export default function Home() {
       asset.id = doc.id;
       assets.push(asset);
     });
-    setAssets(assets);
+    setAssets(assets || []);
   };
 
   const getLiabilities = async () => {
-    console.log("run");
     let liabilities = Array();
     const querySnapshot = await getDocs(collection(db, "liabilities"));
     querySnapshot.forEach((doc) => {
@@ -76,12 +69,33 @@ export default function Home() {
       liability.id = doc.id;
       liabilities.push(liability);
     });
-    setLiabilities(liabilities);
+    setLiabilities(liabilities || []);
+    setLoading(false);
+  };
+
+  const getTotals = () => {
+    let aTotal = 0.0;
+    let lTotal = 0.0;
+    Object.keys(assets).forEach(function (key) {
+      aTotal = aTotal + parseInt(assets[key].value);
+    });
+    Object.keys(liabilities).forEach(function (key) {
+      lTotal = lTotal + parseInt(liabilities[key].value);
+    });
+    setAssetTotal(aTotal || []);
+    setLiabilityTotal(lTotal || []);
   };
 
   useEffect(() => {
     getAssets();
+  }, []);
+
+  useEffect(() => {
     getLiabilities();
+  }, []);
+
+  useEffect(() => {
+    getTotals();
   }, []);
 
   return (
@@ -103,7 +117,7 @@ export default function Home() {
             marginTop: "100px",
           }}
         >
-          £1,298,333
+          {loading ? "..." : assetTotal - liabilityTotal}
         </div>
         <div
           style={{
@@ -137,7 +151,7 @@ export default function Home() {
                 fontSize: "4em",
               }}
             >
-              £1,928,929
+              {loading ? "..." : <p>{assetTotal}</p>}
             </div>
             <div
               style={{
@@ -154,11 +168,7 @@ export default function Home() {
             className="assetGrid"
             style={{ marginLeft: "150px", marginRight: "150px" }}
           >
-            <Button
-              onClick={handleAddAssetOpen}
-              style={{ float: "right", marginRight: 80 }}
-              size="large"
-            >
+            <Button onClick={handleAddAssetOpen} size="large">
               Add Asset
             </Button>
             <AssetGrid assets={assets} />
@@ -170,7 +180,7 @@ export default function Home() {
                 fontSize: "4em",
               }}
             >
-              £630,596
+              {loading ? "..." : liabilityTotal}
             </div>
             <div
               style={{
@@ -187,7 +197,9 @@ export default function Home() {
             className="liabilityGrid"
             style={{ marginLeft: "150px", marginRight: "150px" }}
           >
-            <Button onClick={testL}>Add</Button>
+            <Button onClick={handleAddLiabilityOpen} size="large">
+              Add Liability
+            </Button>
             <LiabilityGrid liabilities={liabilities} />
           </div>
         </div>
@@ -197,19 +209,31 @@ export default function Home() {
         onClose={handleAddAssetClose}
         TransitionComponent={Transition}
         PaperProps={{
-          style: { borderRadius: 15 },
+          style: { borderRadius: 15, background: "#121212" },
         }}
       >
         <ThemeProvider>
           <AppBar
             sx={{ position: "relative" }}
-            style={{ background: "#ff00ff" }}
+            style={{
+              background: "#212121",
+            }}
           >
             <Toolbar variant="dense">
-              <Typography sx={{ ml: 3, flex: 1 }} variant="h6" component="div">
+              <Typography
+                sx={{ ml: 3, flex: 1 }}
+                variant="h6"
+                component="div"
+                style={{ fontFamily: "Quicksand" }}
+              >
                 Add asset
               </Typography>
-              <Button autoFocus color="inherit" onClick={handleAddAssetClose}>
+              <Button
+                autoFocus
+                color="inherit"
+                onClick={handleAddAssetClose}
+                style={{ fontFamily: "Quicksand" }}
+              >
                 Close
               </Button>
             </Toolbar>
@@ -223,6 +247,49 @@ export default function Home() {
           }}
         >
           <AddAssetForm />
+        </div>
+      </Dialog>
+      <Dialog
+        open={openAddLiability}
+        onClose={handleAddLiabilityClose}
+        TransitionComponent={Transition}
+        PaperProps={{
+          style: { borderRadius: 15, background: "#121212" },
+        }}
+      >
+        <ThemeProvider>
+          <AppBar
+            sx={{ position: "relative" }}
+            style={{ background: "#212121" }}
+          >
+            <Toolbar variant="dense">
+              <Typography
+                sx={{ ml: 3, flex: 1 }}
+                variant="h6"
+                component="div"
+                style={{ fontFamily: "Quicksand" }}
+              >
+                Add liability
+              </Typography>
+              <Button
+                autoFocus
+                color="inherit"
+                onClick={handleAddLiabilityClose}
+                style={{ fontFamily: "Quicksand" }}
+              >
+                Close
+              </Button>
+            </Toolbar>
+          </AppBar>
+        </ThemeProvider>
+        <div
+          style={{
+            margin: "20px",
+            marginLeft: "80px",
+            marginRight: "80px",
+          }}
+        >
+          <AddLiabilityForm />
         </div>
       </Dialog>
       ;

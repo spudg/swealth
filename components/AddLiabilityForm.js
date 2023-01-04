@@ -23,15 +23,15 @@ const initialFValues = {
   owner_id: "",
 };
 
-export default function AddAssetForm() {
+export default function AddLiabilityForm() {
   const validate = () => {
     let temp = {};
     temp.value = values.value
       ? ""
-      : "Please enter the asset's estimated value.";
+      : "Please enter the liability's estimated value.";
     temp.name = values.name
       ? ""
-      : "Please enter a brief name or description of the asset.";
+      : "Please enter a brief name or description of the liability.";
     temp.type = values.type ? "" : "Required field.";
     setErrors({
       ...temp,
@@ -46,13 +46,13 @@ export default function AddAssetForm() {
     if (!validate()) e.preventDefault();
     else {
       //e.preventDefault();
-      addAsset(values);
+      addLiability(values);
     }
   };
 
-  async function addAsset(values) {
+  async function addLiability(values) {
     try {
-      const docRef = await addDoc(collection(db, "assets"), {
+      const docRef = await addDoc(collection(db, "liabilities"), {
         name: values.name,
         owner_id: "C8rZzRZsNIAhneQAY9jI",
         value: values.value,
@@ -65,22 +65,10 @@ export default function AddAssetForm() {
   }
 
   return (
-    <div
-      style={{
-        height: "auto",
-        width: "auto",
-        display: "grid",
-      }}
-    >
+    <div style={{ height: "auto", width: "auto", display: "grid" }}>
       <Form onSubmit={handleSubmit}>
         <Grid container>
-          <Grid
-            container
-            xs={12}
-            alignItems="center"
-            justifyContent="center"
-            sx={{ input: { color: "white" } }}
-          >
+          <Grid container xs={12} alignItems="center" justifyContent="center">
             <Controls.Input
               label="Name"
               name="name"
@@ -103,13 +91,9 @@ export default function AddAssetForm() {
                 value={values.type || ""}
                 onChange={handleInputChange}
               >
-                <MenuItem value={"property"}>Property</MenuItem>
-                <MenuItem value={"listed-investments"}>
-                  Listed investments
-                </MenuItem>
-                <MenuItem value={"unlisted-investments"}>
-                  Unlisted investments
-                </MenuItem>
+                <MenuItem value={"credit-card"}>Credit card</MenuItem>
+                <MenuItem value={"loan"}>Loan</MenuItem>
+                <MenuItem value={"mortgage"}>Mortgage</MenuItem>
                 <MenuItem value={"other"}>Other</MenuItem>
               </Select>
             </FormControl>

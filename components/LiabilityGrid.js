@@ -6,11 +6,6 @@ import { doc, getDoc } from "firebase/firestore";
 const columns = [
   { field: "id", headerName: "ID", width: 90 },
   {
-    field: "date_added",
-    headerName: "Date Added",
-    width: 150,
-  },
-  {
     field: "name",
     headerName: "Name",
     width: 150,
