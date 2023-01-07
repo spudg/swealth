@@ -5,10 +5,7 @@ import Controls from "./controls/Controls";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { collection, addDoc } from "firebase/firestore";
-
-const firebaseConfig = {
-  //Shhh
-};
+import { firebaseConfig } from "../components/GlobalFunctions";
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

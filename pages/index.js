@@ -4,6 +4,8 @@ import AssetGrid from "../components/AssetGrid";
 import LiabilityGrid from "../components/LiabilityGrid";
 import AddAssetForm from "../components/AddAssetForm";
 import AddLiabilityForm from "../components/AddLiabilityForm";
+import { currencyFormat } from "../components/GlobalFunctions";
+import { firebaseConfig } from "../components/GlobalFunctions";
 
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
@@ -13,17 +15,12 @@ import {
   AppBar,
   Button,
   Dialog,
-  getToolbarUtilityClass,
   Slide,
   Toolbar,
   Typography,
 } from "@mui/material";
 import { ThemeProvider } from "@mui/styles";
 import React, { useEffect } from "react";
-
-const firebaseConfig = {
-  //Shhh
-};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -36,12 +33,10 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export default function Home() {
-  const [loading, setLoading] = React.useState(true);
-
-  const [assets, setAssets] = React.useState(false);
-  const [liabilities, setLiabilities] = React.useState(false);
-  const [assetTotal, setAssetTotal] = React.useState(false);
-  const [liabilityTotal, setLiabilityTotal] = React.useState(false);
+  const [assets, setAssets] = React.useState([]);
+  const [liabilities, setLiabilities] = React.useState([]);
+  const [assetTotal, setAssetTotal] = React.useState([]);
+  const [liabilityTotal, setLiabilityTotal] = React.useState([]);
 
   const handleAddAssetOpen = () => setOpenAddAsset(true);
   const handleAddAssetClose = () => setOpenAddAsset(false);
@@ -51,51 +46,46 @@ export default function Home() {
   const [openAddLiability, setOpenAddLiability] = React.useState(false);
 
   const getAssets = async () => {
+    let aTotal = 0.0;
     let assets = Array();
+
     const querySnapshot = await getDocs(collection(db, "assets"));
     querySnapshot.forEach((doc) => {
       let asset = doc.data();
       asset.id = doc.id;
       assets.push(asset);
     });
+
+    Object.keys(assets).forEach(function (key) {
+      aTotal = aTotal + parseInt(assets[key].value);
+    });
+
     setAssets(assets || []);
+    setAssetTotal(aTotal || []);
   };
 
   const getLiabilities = async () => {
     let liabilities = Array();
+    let lTotal = 0.0;
+
     const querySnapshot = await getDocs(collection(db, "liabilities"));
     querySnapshot.forEach((doc) => {
       let liability = doc.data();
       liability.id = doc.id;
       liabilities.push(liability);
     });
-    setLiabilities(liabilities || []);
-    setLoading(false);
-  };
 
-  const getTotals = () => {
-    let aTotal = 0.0;
-    let lTotal = 0.0;
-    Object.keys(assets).forEach(function (key) {
-      aTotal = aTotal + parseInt(assets[key].value);
-    });
     Object.keys(liabilities).forEach(function (key) {
       lTotal = lTotal + parseInt(liabilities[key].value);
     });
-    setAssetTotal(aTotal || []);
+
+    setLiabilities(liabilities || []);
     setLiabilityTotal(lTotal || []);
   };
 
   useEffect(() => {
     getAssets();
-  }, []);
-
-  useEffect(() => {
     getLiabilities();
-  }, []);
-
-  useEffect(() => {
-    getTotals();
   }, []);
 
   return (
@@ -117,7 +107,7 @@ export default function Home() {
             marginTop: "100px",
           }}
         >
-          {loading ? "..." : assetTotal - liabilityTotal}
+          {currencyFormat(parseFloat(assetTotal - liabilityTotal))}
         </div>
         <div
           style={{
@@ -151,7 +141,7 @@ export default function Home() {
                 fontSize: "4em",
               }}
             >
-              {loading ? "..." : <p>{assetTotal}</p>}
+              {currencyFormat(parseFloat(assetTotal))}
             </div>
             <div
               style={{
@@ -180,7 +170,7 @@ export default function Home() {
                 fontSize: "4em",
               }}
             >
-              {loading ? "..." : liabilityTotal}
+              {currencyFormat(parseFloat(liabilityTotal))}
             </div>
             <div
               style={{
